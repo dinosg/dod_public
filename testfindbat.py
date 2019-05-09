@@ -51,7 +51,7 @@ def findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es):
                             break
                     else:  #no unserved load but we can still charge batteries
                         if (navail_es[i1,i2] > 0 and bat_charge[i1, i2, t-1]< es_max ):   #charge battery IF it isn't full
-                            charging_current = min(es_size,bat_charge[i1,i2,t-1] - usl[i1,i2,t ]/navail_es[i1,i2]) 
+                            charging_current = min(es_max,bat_charge[i1,i2,t-1] - usl[i1,i2,t ]/navail_es[i1,i2]) 
                             bat_charge[i1,i2,t]=bat_charge[i1,i2,t-1]+charging_current
                             bat_charge[i1,i2,t]=min(bat_charge[i1,i2,t], es_max) #cant continue charging once it's full
                             navail_es[i1,i2]=ggp_timestep_bat( navail_es[i1,i2], Pfr_es) #knock out battery after charging
