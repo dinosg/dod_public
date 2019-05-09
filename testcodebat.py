@@ -46,8 +46,9 @@ Pfr_es = 1 - np.exp(-1/mtbf_es)
 ngens=7 #hand code # of generators in system, for now
 n_es = 2 #number of energy storage units
 gensize=750 #hand code this for now
-es_max = gensize*5 #assume each es unit sized same as DG's and has 5 hours capacity
+#assume each es unit sized same as DG's and has 5 hours capacity
 es_size=750  #for here, assume battery size is same as gen unit but it could be anything
+es_max = es_size*6 
 # step 1.
 aa=read_excel('NASCorpusChristi.xlsx', sheet_name='NASCorpusChristi')
 zk=aa.keys()
