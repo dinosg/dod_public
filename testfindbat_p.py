@@ -43,7 +43,7 @@ def findcolp_es_par(i1, i2, usl, navail_es, Pfr_es, es_size, es_max, bat_charge,
         if t > 0:
             if usl[t] > 0:
 
-                if (navail_es > 0) and (es_size  > usl[t]/max(navail_es,1) ):
+                if (navail_es > 0) and (es_size  > usl[t]/navail_es ):
                     bat_charge[t] = bat_charge[t-1] - usl[t ]/(navail_es)
                     if bat_charge[t] < 0:
                         failbatarr[t:]=1
@@ -54,14 +54,14 @@ def findcolp_es_par(i1, i2, usl, navail_es, Pfr_es, es_size, es_max, bat_charge,
                     break
             else:
                 if (navail_es > 0 and bat_charge[t-1]< es_max):   #charge battery IF it isn't full
-                    charging_current = min(es_size,bat_charge[t-1] - usl[t]/navail_es)
+                    charging_current = min(es_size,usl[t]/navail_es)
                     bat_charge[t]=bat_charge[t-1]+charging_current
                     bat_charge[t]=min(bat_charge[t], es_max) #cant continue charging once it's full
                     navail_es=ggp_timestep_bat( navail_es, Pfr_es) #knock out battery after charging
         else:
             if usl[t] > 0:
 
-                if (navail_es > 0) and (es_size  >  usl[t]/max(navail_es,1) ):
+                if (navail_es > 0) and (es_size  >  usl[t]/navail_es ):
                     bat_charge[0] = bat_charge[0] - usl[t]/navail_es
                     if bat_charge[0] < 0:
                         failbatarr[t:]=1
