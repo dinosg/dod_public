@@ -40,15 +40,15 @@ Pfs = 0.002 #from estcp
 Pfs_es = 0.015  #as per Ben LaVoie spreadsheet
 mtbf=1700 #from estcp
 mtbf_es = 1350 #energy storage MTBF, as per Ben LaVoie spreadsheet
-niters=50  # # of iterations in MCS
+niters=40  # # of iterations in MCS
 Pfr= 1- np.exp(-1/mtbf)
 Pfr_es = 1 - np.exp(-1/mtbf_es)
 ngens=7 #hand code # of generators in system, for now
 n_es = 2 #number of energy storage units
 gensize=750 #hand code this for now
 #assume each es unit sized same as DG's and has 5 hours capacity
-es_size=750  #for here, assume battery size is same as gen unit but it could be anything
-es_max = es_size*6 
+es_size=750  #power capacity: for here, assume battery size is same as gen unit but it could be anything
+es_max = es_size*6 #total storage energy
 # step 1.
 aa=read_excel('NASCorpusChristi.xlsx', sheet_name='NASCorpusChristi')
 zk=aa.keys()
@@ -78,9 +78,7 @@ print('# of cases w/ 3 gens starting:  ', np.count_nonzero(navail == 3), '\n')
 #failcasearr = np.zeros((niters,8760, 168))
 #failcasearr[:,:,0] = failcase0.copy() 
 usl = np.zeros((niters,8760, 168)) #unserved load
-bat_time = np.zeros((niters,8760, 168)) #track time battery used
-bat_charge = np.zeros((niters,8760, 168)) #track battery charge
-bat_charge[:,:,0]=es_max #assume initial battery charge - is FULL
+
 
 
 for  t in np.arange(168):  #basic time propagation over 168 hours here

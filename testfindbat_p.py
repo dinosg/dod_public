@@ -92,6 +92,11 @@ def findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es):
     return(failbatarr)
 
 timestart1 = time.time()
+
+bat_charge = np.zeros((niters,8760, 168)) #track battery charge
+bat_charge[:,:,0]=es_max #assume initial battery charge - is FULL
+#bat_time=np.zeros((niters,8760,168))
+bat_time=0
 failcasearr1=findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es)
 timestop1=time.time()
 print("execution time = " , timestop1 - timestart1)
