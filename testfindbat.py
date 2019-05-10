@@ -30,10 +30,10 @@ def ggp_timestep_bat(g, Pfr_es):
     theodds = np.random.rand() #just need a scalar random # here
     res1 = theodds < theprobs #actual matrix of which cases lose a generator
     theresult = g - res1
-  
+
     return(theresult)
 def findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es):
-   
+
     arrayshape=usl.shape
     failbatarr = usl*0  # matrix same size as usl but fill with zeros to start
     niters=arrayshape[0]
@@ -43,35 +43,47 @@ def findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es):
             for t in range(168):
                 if t > 0:
                     if usl[i1, i2, t] > 0:  #if unserved load >0, that is, gens NOT ENOUGH to feed load!
-                        navail_es[i1,i2]=ggp_timestep_bat( navail_es[i1,i2], Pfr_es) #knock out battery # available per timestep
-                        if (navail_es[i1,i2] > 0) and (es_size  > bat_charge[i1,i2,t-1] - usl[i1,i2,t ]/max(navail_es[i1,i2],1) ):
+                        if (navail_es[i1,i2] > 0) and (es_size  > usl[i1,i2,t ]/max(navail_es[i1,i2],1) ):
                             bat_charge[i1,i2,t] = bat_charge[i1,i2,t-1] - usl[i1,i2,t ]/(navail_es[i1,i2])
+                            if bat_charge[i1,i2,t] < 0:
+                                failbatarr[i1,i2,t:]=1 # battery failed to cover critical current here and henceforth
+                                break
+                            navail_es[i1,i2]=ggp_timestep_bat( navail_es[i1,i2], Pfr_es) #knock out battery # available per timestep
                         else:
                             failbatarr[i1,i2,t:]=1 # battery failed to cover critical current here and henceforth
                             break
                     else:  #no unserved load but we can still charge batteries
                         if (navail_es[i1,i2] > 0 and bat_charge[i1, i2, t-1]< es_max ):   #charge battery IF it isn't full
-                            charging_current = min(es_max,bat_charge[i1,i2,t-1] - usl[i1,i2,t ]/navail_es[i1,i2]) 
+                            charging_current = min(es_size,bat_charge[i1,i2,t-1] - usl[i1,i2,t ]/navail_es[i1,i2])
                             bat_charge[i1,i2,t]=bat_charge[i1,i2,t-1]+charging_current
                             bat_charge[i1,i2,t]=min(bat_charge[i1,i2,t], es_max) #cant continue charging once it's full
                             navail_es[i1,i2]=ggp_timestep_bat( navail_es[i1,i2], Pfr_es) #knock out battery after charging
-                            
-                      
+
+
                 else:
                     if usl[i1,i2,t ] > 0:
-                        navail_es[i1,i2]=ggp_timestep_bat( navail_es[i1,i2], Pfr_es) #knock out battery # available per timestep 
-                        if (navail_es[i1,i2] > 0) and (es_size  > bat_charge[i1,i2,0] - usl[i1,i2,t ]/max(navail_es[i1,i2],1) ):
+                        #knock out battery # available per timestep
+                        if (navail_es[i1,i2] > 0) and (es_size  > usl[i1,i2,t ]/max(navail_es[i1,i2],1) ):
                             bat_charge[i1,i2,0] = bat_charge[i1,i2,0] - usl[i1,i2,t ]/navail_es[i1,i2]
+                            navail_es[i1,i2]=ggp_timestep_bat( navail_es[i1,i2], Pfr_es)
+                            if bat_charge[i1,i2,0] < 0:
+                                failbatarr[i1,i2,t:]=1 # battery failed to cover critical current here and henceforth
+                                break
+
                         else:
                             failbatarr[i1,i2,t:]=1 # battery failed to cover critical current here and henceforth
                             break
-                    
-                    
-      
+
+
+
 
     return(failbatarr)
-    
+
 timestart1 = time.time()
 failcasearr1=findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es)
 timestop1=time.time()
 print("execution time = %s " , timestop1 - timestart1)
+f1=np.mean(failcasearr1,axis=0)
+f2=np.mean(f1,axis=0)
+
+colp=1-f2 #the final reliability result
