@@ -48,6 +48,7 @@ def findcolp_es_par(i1, i2, usl, navail_es, Pfr_es, es_size, es_max, bat_charge,
                     navail_es=ggp_timestep_bat( navail_es, Pfr_es) #knock out battery # available per timestep
                 else:
                     failbatarr[t:]=1 # battery failed to cover critical current here and henceforth
+                    break
             else:
                 if (navail_es > 0 and bat_charge[t-1]< es_max):   #charge battery IF it isn't full
                     charging_current = min(es_size,bat_charge[t-1] - usl[t]/navail_es)
@@ -62,6 +63,7 @@ def findcolp_es_par(i1, i2, usl, navail_es, Pfr_es, es_size, es_max, bat_charge,
                     navail_es=ggp_timestep_bat( navail_es, Pfr_es) #knock out battery # available per timestep
                 else:
                     failbatarr[t:]=1 # battery failed to cover critical current here and henceforth
+                    break
 
     return i1, i2, navail_es, bat_charge, failbatarr
 
@@ -84,7 +86,7 @@ def findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es):
 timestart1 = time.time()
 failcasearr1=findcolp_es(usl, bat_time, bat_charge, navail_es, es_max, es_size, Pfr_es)
 timestop1=time.time()
-print("execution time = %s " , timestop1 - timestart1)
+print("execution time = " , timestop1 - timestart1)
 f1=np.mean(failcasearr1,axis=0)
 f2=np.mean(f1,axis=0)
 
