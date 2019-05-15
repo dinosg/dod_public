@@ -51,3 +51,5 @@ Analyzes the failure matrix (niterations, 8760, 168) and extends any failure (a 
 
 Failfindbat
 Analyzes usl. Computes a failure matrix wherever battery charge or capacity can’t cover usl. It charges battery with that portion of the generator capacity not needed for the critical load, less a penalty for the battery round trip efficiency.
+
+testfind, testfindbat are earlier versions that execute by direct running as opposed to by being called as a function. assumptions on energy storage parameters are pre-defined as variables. testfindbat_p is set up for multiprocessing using a parallel pool however it turned out that numba accelerator @njit achived better performance benefits
